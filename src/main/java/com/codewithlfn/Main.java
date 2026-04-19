@@ -4,14 +4,16 @@ public class Main {
     public static void main(String[] args) {
         RedBlackTree tree = new RedBlackTree();
 
-        System.out.println("Inserting 10, 20, 30, 15, 25 into Red-Black Tree...\n");
+        // lets insert some student marks and watch the tree balance itself
+        System.out.println("--- inserting marks into the Red-Black Tree ---\n");
         tree.insert(10);
         tree.insert(20);
-        tree.insert(30); // Triggers Left Rotation
-        tree.insert(15); // Triggers Recoloring
-        tree.insert(25); // Triggers Recoloring
+        tree.insert(30); // this one triggers a left rotation
+        tree.insert(15); // this one triggers recolouring
+        tree.insert(25); // this one triggers recolouring
 
-        System.out.println("Red-Black Tree Structure:");
+        // print the tree to show the colours prove the rules are working
+        System.out.println("tree structure with node colours:");
         tree.printTree(tree.root, "", false);
     }
 }

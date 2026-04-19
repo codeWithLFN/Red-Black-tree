@@ -3,124 +3,139 @@ package com.codewithlfn;
 public class RedBlackTree {
     RBNode root;
 
-    void rotateLeft(RBNode x) {
-        RBNode y = x.right;
-        x.right = y.left;
-        if (y.left != null) y.left.parent = x;
-        y.parent = x.parent;
+    // tree is leaning right so we tip it to the left
+    void rotateLeft(RBNode node) {
+        RBNode rightChild = node.right;
+        node.right = rightChild.left;
+        if (rightChild.left != null) {
+            rightChild.left.parent = node;
+        }
+        rightChild.parent = node.parent;
 
-        if (x.parent == null) root = y;
-        else if (x == x.parent.left) x.parent.left = y;
-        else x.parent.right = y;
+        if (node.parent == null) {
+            root = rightChild;
+        } else if (node == node.parent.left) {
+            node.parent.left = rightChild;
+        } else {
+            node.parent.right = rightChild;
+        }
 
-        y.left = x;
-        x.parent = y;
+        rightChild.left = node;
+        node.parent = rightChild;
     }
 
-    void rotateRight(RBNode x) {
-        RBNode y = x.left;
-        x.left = y.right;
-        if (y.right != null) y.right.parent = x;
-        y.parent = x.parent;
+    // tree is leaning left so we tip it to the right
+    void rotateRight(RBNode node) {
+        RBNode leftChild = node.left;
+        node.left = leftChild.right;
+        if (leftChild.right != null) {
+            leftChild.right.parent = node;
+        }
+        leftChild.parent = node.parent;
 
-        if (x.parent == null) root = y;
-        else if (x == x.parent.right) x.parent.right = y;
-        else x.parent.left = y;
+        if (node.parent == null) {
+            root = leftChild;
+        } else if (node == node.parent.right) {
+            node.parent.right = leftChild;
+        } else {
+            node.parent.left = leftChild;
+        }
 
-        y.right = x;
-        x.parent = y;
+        leftChild.right = node;
+        node.parent = leftChild;
     }
 
-    void insert(int data) {
-        RBNode newNode = new RBNode(data);
+    // adds a new value into the tree
+    void insert(int value) {
+        RBNode newNode = new RBNode(value);
 
-        // bst insertion
+        // if tree is empty this becomes the root
         if (root == null) {
             root = newNode;
             newNode.colour = Colour.BLACK;
             return;
         }
 
-        RBNode parent = null;
+        // walk down to find the right spot
+        RBNode parentNode = null;
         RBNode current = root;
         while (current != null) {
-            parent = current;
-            if (newNode.data < current.data){
+            parentNode = current;
+            if (newNode.value < current.value) {
                 current = current.left;
-            } else if (newNode.data > current.data) {
+            } else if (newNode.value > current.value) {
                 current = current.right;
             } else {
-                return; // No duplicates allowed
+                return; // already in the tree, skip it
             }
         }
 
-        newNode.parent = parent;
-        if (newNode.data < parent.data) {
-            parent.left = newNode;
+        newNode.parent = parentNode;
+        if (newNode.value < parentNode.value) {
+            parentNode.left = newNode;
         } else {
-            parent.right = newNode;
+            parentNode.right = newNode;
         }
 
-        // fix the colour of the parent
-        fixInsert(newNode);
+        // check and fix any colour violations
+        fixColours(newNode);
     }
 
-    private void fixInsert(RBNode newNode) {
-        while (newNode.parent != null && newNode.parent.colour == Colour.RED) {
-            RBNode grandParent = newNode.parent.parent;
+    // walks back up fixing any double-red violations
+    private void fixColours(RBNode node) {
+        while (node.parent != null && node.parent.colour == Colour.RED) {
+            RBNode grandParent = node.parent.parent;
 
-            // the parent is the left child
-            if (newNode.parent == grandParent.left) {
+            // parent is on the left side
+            if (node.parent == grandParent.left) {
                 RBNode uncle = grandParent.right;
-                // uncle is red
+
+                // uncle is red so we just recolour
                 if (uncle != null && uncle.colour == Colour.RED) {
-                    newNode.parent.colour = Colour.BLACK;
+                    node.parent.colour = Colour.BLACK;
                     uncle.colour = Colour.BLACK;
                     grandParent.colour = Colour.RED;
-                    newNode = grandParent;
+                    node = grandParent;
                 } else {
-                    // uncle is black or null
-                    if (newNode == newNode.parent.right) {
-                        newNode = newNode.parent;
-                        rotateLeft(newNode);
+                    // uncle is black so we need to rotate
+                    if (node == node.parent.right) {
+                        node = node.parent;
+                        rotateLeft(node);
                     }
-
-                    // uncle is black or null
-                    newNode.parent.colour = Colour.BLACK;
+                    node.parent.colour = Colour.BLACK;
                     grandParent.colour = Colour.RED;
                     rotateRight(grandParent);
                 }
             }
-            // the parent is the right child
+            // parent is on the right side
             else {
                 RBNode uncle = grandParent.left;
-                // uncle is red
+
+                // uncle is red so we just recolour
                 if (uncle != null && uncle.colour == Colour.RED) {
-                    newNode.parent.colour = Colour.BLACK;
+                    node.parent.colour = Colour.BLACK;
                     uncle.colour = Colour.BLACK;
                     grandParent.colour = Colour.RED;
-                    newNode = grandParent;
+                    node = grandParent;
                 } else {
-                    // uncle is black or null
-                    if (newNode == newNode.parent.left) {
-                        newNode = newNode.parent;
-                        rotateRight(newNode);
+                    // uncle is black so we need to rotate
+                    if (node == node.parent.left) {
+                        node = node.parent;
+                        rotateRight(node);
                     }
-
-                    // uncle is black or null
-                    newNode.parent.colour = Colour.BLACK;
+                    node.parent.colour = Colour.BLACK;
                     grandParent.colour = Colour.RED;
                     rotateLeft(grandParent);
                 }
             }
         }
-        root.colour = Colour.BLACK; // root is always black
+        root.colour = Colour.BLACK; // root must always stay black
     }
 
-    // Demonstration
+    // prints the tree sideways so we can see the colours of each node
     public void printTree(RBNode node, String prefix, boolean isLeft) {
         if (node != null) {
-            System.out.println(prefix + (isLeft ? "+-- " : "\\-- ") + node.data + " [" + node.colour + "]");
+            System.out.println(prefix + (isLeft ? "+-- " : "\\-- ") + node.value + " [" + node.colour + "]");
             printTree(node.left, prefix + (isLeft ? "|   " : "    "), true);
             printTree(node.right, prefix + (isLeft ? "|   " : "    "), false);
         }
