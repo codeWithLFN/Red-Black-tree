@@ -132,12 +132,16 @@ public class RedBlackTree {
         root.colour = Colour.BLACK; // root must always stay black
     }
 
-    // prints the tree sideways so we can see the colours of each node
-    public void printTree(RBNode node, String prefix, boolean isLeft) {
+    // prints all values in sorted order to prove insertion worked
+    public void printInOrder() {
+        printInOrder(root);
+    }
+
+    private void printInOrder(RBNode node) {
         if (node != null) {
-            System.out.println(prefix + (isLeft ? "+-- " : "\\-- ") + node.value + " [" + node.colour + "]");
-            printTree(node.left, prefix + (isLeft ? "|   " : "    "), true);
-            printTree(node.right, prefix + (isLeft ? "|   " : "    "), false);
+            printInOrder(node.left);
+            System.out.print(node.value + " [" + node.colour + "]  ");
+            printInOrder(node.right);
         }
     }
 }

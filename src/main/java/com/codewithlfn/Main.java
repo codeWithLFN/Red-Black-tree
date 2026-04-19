@@ -12,8 +12,9 @@ public class Main {
         tree.insert(15); // this one triggers recolouring
         tree.insert(25); // this one triggers recolouring
 
-        // print the tree to show the colours prove the rules are working
-        System.out.println("tree structure with node colours:");
-        tree.printTree(tree.root, "", false);
+        // print all values with their colours to prove the rules are working
+        System.out.print("values in order with colours: ");
+        tree.printInOrder();
+        System.out.println();
     }
 }
